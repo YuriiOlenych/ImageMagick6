@@ -17,13 +17,13 @@
 %                               September 2014                                %
 %                                                                             %
 %                                                                             %
-%  Copyright 1999-2018 ImageMagick Studio LLC, a non-profit organization      %
+%  Copyright 1999-2020 ImageMagick Studio LLC, a non-profit organization      %
 %  dedicated to making software imaging solutions freely available.           %
 %                                                                             %
 %  You may not use this file except in compliance with the License.  You may  %
 %  obtain a copy of the License at                                            %
 %                                                                             %
-%    https://www.imagemagick.org/script/license.php                           %
+%    https://imagemagick.org/script/license.php                               %
 %                                                                             %
 %  Unless required by applicable law or agreed to in writing, software        %
 %  distributed under the License is distributed on an "AS IS" BASIS,          %
@@ -157,7 +157,8 @@ MagickExport Image *ConnectedComponentsImage(const Image *image,
     *artifact;
 
   double
-    area_threshold;
+    max_threshold,
+    min_threshold;
 
   Image
     *component_image;
@@ -178,6 +179,7 @@ MagickExport Image *ConnectedComponentsImage(const Image *image,
     size;
 
   ssize_t
+    background_id,
     first,
     last,
     n,
@@ -250,8 +252,8 @@ MagickExport Image *ConnectedComponentsImage(const Image *image,
 
     if (status == MagickFalse)
       continue;
-    dy=connectivity > 4 ? connect8[n][0] : connect4[n][0];
     dx=connectivity > 4 ? connect8[n][1] : connect4[n][1];
+    dy=connectivity > 4 ? connect8[n][0] : connect4[n][0];
     for (y=0; y < (ssize_t) image->rows; y++)
     {
       register const PixelPacket
@@ -337,12 +339,10 @@ MagickExport Image *ConnectedComponentsImage(const Image *image,
       }
     }
   }
-  image_view=DestroyCacheView(image_view);
   /*
     Label connected components.
   */
   n=0;
-  image_view=AcquireVirtualCacheView(image,exception);
   component_view=AcquireAuthenticCacheView(component_image,exception);
   for (y=0; y < (ssize_t) component_image->rows; y++)
   {
@@ -396,7 +396,7 @@ MagickExport Image *ConnectedComponentsImage(const Image *image,
         object[id].bounding_box.width=(size_t) x;
       if (y < object[id].bounding_box.y)
         object[id].bounding_box.y=y;
-      if (y >=(ssize_t) object[id].bounding_box.height)
+      if (y >= (ssize_t) object[id].bounding_box.height)
         object[id].bounding_box.height=(size_t) y;
       object[id].color.red+=QuantumScale*p->red;
       object[id].color.green+=QuantumScale*p->green;
@@ -421,7 +421,8 @@ MagickExport Image *ConnectedComponentsImage(const Image *image,
         MagickBooleanType
           proceed;
 
-        proceed=SetImageProgress(image,ConnectedComponentsImageTag,progress++,
+        progress++;
+        proceed=SetImageProgress(image,ConnectedComponentsImageTag,progress,
           image->rows);
         if (proceed == MagickFalse)
           status=MagickFalse;
@@ -436,31 +437,38 @@ MagickExport Image *ConnectedComponentsImage(const Image *image,
       component_image=DestroyImage(component_image);
       ThrowImageException(ResourceLimitError,"TooManyObjects");
     }
+  min_threshold=0.0;
+  max_threshold=0.0;
+  background_id=0;
   component_image->colors=(size_t) n;
   for (i=0; i < (ssize_t) component_image->colors; i++)
   {
     object[i].bounding_box.width-=(object[i].bounding_box.x-1);
     object[i].bounding_box.height-=(object[i].bounding_box.y-1);
-    object[i].color.red=QuantumRange*(object[i].color.red/object[i].area);
-    object[i].color.green=QuantumRange*(object[i].color.green/object[i].area);
-    object[i].color.blue=QuantumRange*(object[i].color.blue/object[i].area);
+    object[i].color.red/=(object[i].area/QuantumRange);
+    object[i].color.green/=(object[i].area/QuantumRange);
+    object[i].color.blue/=(object[i].area/QuantumRange);
     if (image->matte != MagickFalse)
-      object[i].color.opacity=QuantumRange*(object[i].color.opacity/
-        object[i].area);
+      object[i].color.opacity/=(object[i].area/QuantumRange);
     if (image->colorspace == CMYKColorspace)
-      object[i].color.index=QuantumRange*(object[i].color.index/object[i].area);
-    object[i].centroid.x=object[i].centroid.x/object[i].area;
-    object[i].centroid.y=object[i].centroid.y/object[i].area;
+      object[i].color.index/=(object[i].area/QuantumRange);
+    object[i].centroid.x/=object[i].area;
+    object[i].centroid.y/=object[i].area;
+    max_threshold+=object[i].area;
+    if (object[i].area > object[background_id].area)
+      background_id=i;
   }
-  artifact=GetImageArtifact(image,"connected-components:area-threshold");
-  area_threshold=0.0;
+  max_threshold+=MagickEpsilon;
+  artifact=GetImageArtifact(image,"connected-components:background-id");
   if (artifact != (const char *) NULL)
-    area_threshold=StringToDouble(artifact,(char **) NULL);
-  if (area_threshold > 0.0)
+    background_id=(ssize_t) StringToDouble(artifact,(char **) NULL);
+  artifact=GetImageArtifact(image,"connected-components:area-threshold");
+  if (artifact != (const char *) NULL)
     {
       /*
-        Merge objects below area threshold.
+        Merge any object not within the min and max area threshold.
       */
+      (void) sscanf(artifact,"%lf%*[ -]%lf",&min_threshold,&max_threshold);
       component_view=AcquireAuthenticCacheView(component_image,exception);
       for (i=0; i < (ssize_t) component_image->colors; i++)
       {
@@ -478,8 +486,12 @@ MagickExport Image *ConnectedComponentsImage(const Image *image,
 
         if (status == MagickFalse)
           continue;
-        if ((double) object[i].area >= area_threshold)
-          continue;
+        if (((object[i].area >= min_threshold) &&
+             (object[i].area < max_threshold)) || (i == background_id))
+          continue;  /* keep object */
+        /*
+          Merge this object.
+        */
         for (j=0; j < (ssize_t) component_image->colors; j++)
           object[j].census=0;
         bounding_box=object[i].bounding_box;
@@ -514,12 +526,13 @@ MagickExport Image *ConnectedComponentsImage(const Image *image,
         census=0;
         id=0;
         for (j=0; j < (ssize_t) component_image->colors; j++)
-          if (census < object[j].census)
+          if (census > object[j].census)
             {
               census=object[j].census;
               id=(size_t) j;
             }
         object[id].area+=object[i].area;
+        object[i].area=0.0;
         for (y=0; y < (ssize_t) bounding_box.height; y++)
         {
           register IndexPacket
@@ -551,29 +564,14 @@ MagickExport Image *ConnectedComponentsImage(const Image *image,
         }
       }
       component_view=DestroyCacheView(component_view);
-      (void) SyncImage(component_image);
     }
-  artifact=GetImageArtifact(image,"connected-components:mean-color");
-  if (IsMagickTrue(artifact) != MagickFalse)
-    {
-      /*
-        Replace object with mean color.
-      */
-      for (i=0; i < (ssize_t) component_image->colors; i++)
-      {
-        component_image->colormap[i].red=ClampToQuantum(object[i].color.red);
-        component_image->colormap[i].green=ClampToQuantum(
-          object[i].color.green);
-        component_image->colormap[i].blue=ClampToQuantum(object[i].color.blue);
-        component_image->colormap[i].opacity=ClampToQuantum(
-          object[i].color.opacity);
-      }
-    }
-  artifact=GetImageArtifact(image,"connected-components:keep");
+  artifact=GetImageArtifact(image,"connected-components:keep-ids");
+  if (artifact == (const char *) NULL)
+    artifact=GetImageArtifact(image,"connected-components:keep");
   if (artifact != (const char *) NULL)
     {
       /*
-        Keep these objects (make others transparent).
+        Keep selected objects based on ID (make others transparent).
       */
       for (i=0; i < (ssize_t) component_image->colors; i++)
         object[i].census=0;
@@ -601,15 +599,37 @@ MagickExport Image *ConnectedComponentsImage(const Image *image,
       {
         if (object[i].census != 0)
           continue;
+        object[i].color.matte=MagickTrue;
         component_image->matte=MagickTrue;
         component_image->colormap[i].opacity=TransparentOpacity;
       }
     }
-  artifact=GetImageArtifact(image,"connected-components:remove");
+  artifact=GetImageArtifact(image,"connected-components:keep-top");
+  if (artifact != (const char *) NULL)
+    {
+      ssize_t
+        top_ids;
+
+      /*
+        Keep top objects with most area (make others transparent).
+      */
+      top_ids=(ssize_t) StringToDouble(artifact,(char **) NULL);
+      qsort((void *) object,component_image->colors,sizeof(*object),
+        CCObjectInfoCompare);
+      for (i=top_ids; i < (ssize_t) component_image->colors; i++)
+      {
+        object[object[i].id].color.matte=MagickTrue;
+        component_image->matte=MagickTrue;
+        component_image->colormap[object[i].id].opacity=TransparentOpacity;
+      }
+    }
+  artifact=GetImageArtifact(image,"connected-components:remove-ids");
+  if (artifact == (const char *) NULL)
+    artifact=GetImageArtifact(image,"connected-components:remove");
   if (artifact != (const char *) NULL)
     {
       /*
-        Remove these objects (make them transparent).
+        Remove select objects based on ID (make them transparent).
       */
       for (c=(char *) artifact; *c != '\0';)
       {
@@ -635,12 +655,28 @@ MagickExport Image *ConnectedComponentsImage(const Image *image,
         }
       }
     }
+  artifact=GetImageArtifact(image,"connected-components:mean-color");
+  if (IsMagickTrue(artifact) != MagickFalse)
+    {
+      /*
+        Replace object with mean color.
+      */
+      for (i=0; i < (ssize_t) component_image->colors; i++)
+      {
+        component_image->colormap[i].red=ClampToQuantum(object[i].color.red);
+        component_image->colormap[i].green=ClampToQuantum(
+          object[i].color.green);
+        component_image->colormap[i].blue=ClampToQuantum(object[i].color.blue);
+        component_image->colormap[i].opacity=ClampToQuantum(
+          object[i].color.opacity);
+      }
+    }
   (void) SyncImage(component_image);
   artifact=GetImageArtifact(image,"connected-components:verbose");
   if (IsMagickTrue(artifact) != MagickFalse)
     {
       /*
-        Report statistics on unique objects.
+        Report statistics on each unique objects.
       */
       for (i=0; i < (ssize_t) component_image->colors; i++)
       {
@@ -650,6 +686,7 @@ MagickExport Image *ConnectedComponentsImage(const Image *image,
         object[i].bounding_box.y=(ssize_t) component_image->rows;
         object[i].centroid.x=0;
         object[i].centroid.y=0;
+        object[i].census=object[i].area == 0.0 ? 0.0 : 1.0;
         object[i].area=0;
       }
       component_view=AcquireVirtualCacheView(component_image,exception);
@@ -679,7 +716,7 @@ MagickExport Image *ConnectedComponentsImage(const Image *image,
           size_t
             id;
 
-          id=indexes[x];
+          id=(size_t) indexes[x];
           if (x < object[id].bounding_box.x)
             object[id].bounding_box.x=x;
           if (x > (ssize_t) object[id].bounding_box.width)
@@ -703,25 +740,24 @@ MagickExport Image *ConnectedComponentsImage(const Image *image,
       component_view=DestroyCacheView(component_view);
       qsort((void *) object,component_image->colors,sizeof(*object),
         CCObjectInfoCompare);
-      (void) fprintf(stdout,
-        "Objects (id: bounding-box centroid area mean-color):\n");
-      for (i=0; i < (ssize_t) component_image->colors; i++)
-      {
-        char
-          mean_color[MaxTextExtent];
-
-        if (status == MagickFalse)
-          break;
-        if (object[i].area <= area_threshold)
-          continue;
-        GetColorTuple(&object[i].color,MagickFalse,mean_color);
+      artifact=GetImageArtifact(image,"connected-components:exclude-header");
+      if (IsStringTrue(artifact) == MagickFalse)
         (void) fprintf(stdout,
-          "  %.20g: %.20gx%.20g%+.20g%+.20g %.1f,%.1f %.20g %s\n",(double)
-          object[i].id,(double) object[i].bounding_box.width,(double)
-          object[i].bounding_box.height,(double) object[i].bounding_box.x,
-          (double) object[i].bounding_box.y,object[i].centroid.x,
-          object[i].centroid.y,(double) object[i].area,mean_color);
-      }
+          "Objects (id: bounding-box centroid area mean-color):\n");
+      for (i=0; i < (ssize_t) component_image->colors; i++)
+        if (object[i].census > 0.0)
+          {
+            char
+              mean_color[MaxTextExtent];
+
+            GetColorTuple(&object[i].color,MagickFalse,mean_color);
+            (void) fprintf(stdout,
+              "  %.20g: %.20gx%.20g%+.20g%+.20g %.1f,%.1f %.20g %s\n",(double)
+              object[i].id,(double) object[i].bounding_box.width,(double)
+              object[i].bounding_box.height,(double) object[i].bounding_box.x,
+              (double) object[i].bounding_box.y,object[i].centroid.x,
+              object[i].centroid.y,(double) object[i].area,mean_color);
+          }
     }
   object=(CCObjectInfo *) RelinquishMagickMemory(object);
   return(component_image);

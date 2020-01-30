@@ -17,13 +17,13 @@
 %                                October 2002                                 %
 %                                                                             %
 %                                                                             %
-%  Copyright 1999-2018 ImageMagick Studio LLC, a non-profit organization      %
+%  Copyright 1999-2020 ImageMagick Studio LLC, a non-profit organization      %
 %  dedicated to making software imaging solutions freely available.           %
 %                                                                             %
 %  You may not use this file except in compliance with the License.  You may  %
 %  obtain a copy of the License at                                            %
 %                                                                             %
-%    https://www.imagemagick.org/script/license.php                           %
+%    https://imagemagick.org/script/license.php                               %
 %                                                                             %
 %  Unless required by applicable law or agreed to in writing, software        %
 %  distributed under the License is distributed on an "AS IS" BASIS,          %
@@ -80,6 +80,7 @@
 #include "magick/monitor.h"
 #include "magick/monitor-private.h"
 #include "magick/morphology.h"
+#include "magick/mutex.h"
 #include "magick/paint.h"
 #include "magick/pixel.h"
 #include "magick/pixel-accessor.h"
@@ -1184,7 +1185,7 @@ MagickExport CacheView *CloseCacheView(CacheView *view_info)
 #define PushSegmentStack(up,left,right,delta) \
 { \
   if (s >= (segment_stack+MaxStacksize)) \
-    ThrowBinaryException(DrawError,"SegmentStackOverflow",image->filename) \
+    ThrowBinaryImageException(DrawError,"SegmentStackOverflow",image->filename) \
   else \
     { \
       if ((((up)+(delta)) >= 0) && (((up)+(delta)) < (ssize_t) image->rows)) \
@@ -1254,7 +1255,7 @@ MagickExport MagickBooleanType ColorFloodfillImage(Image *image,
   if (segment_stack == (SegmentInfo *) NULL)
     {
       floodplane_image=DestroyImage(floodplane_image);
-      ThrowBinaryException(ResourceLimitError,"MemoryAllocationFailed",
+      ThrowBinaryImageException(ResourceLimitError,"MemoryAllocationFailed",
         image->filename);
     }
   /*
@@ -3075,7 +3076,7 @@ MagickExport void *GetMagickRegistry(const ssize_t id,RegistryType *type,
 */
 MagickExport void GetMagickToken(const char *start,const char **end,char *token)
 {
-  GetNextToken(start,end,~0UL,token);
+  (void) GetNextToken(start,end,~0UL,token);
 }
 
 /*
@@ -4909,7 +4910,7 @@ MagickExport MagickBooleanType MatteFloodfillImage(Image *image,
   if (segment_stack == (SegmentInfo *) NULL)
     {
       floodplane_image=DestroyImage(floodplane_image);
-      ThrowBinaryException(ResourceLimitError,"MemoryAllocationFailed",
+      ThrowBinaryImageException(ResourceLimitError,"MemoryAllocationFailed",
         image->filename);
     }
   /*
@@ -7455,7 +7456,7 @@ MagickExport unsigned int ThresholdImage(Image *image,const double threshold)
   if (image->debug != MagickFalse)
     (void) LogMagickEvent(DeprecateEvent,GetMagickModule(),"last use: v5.5.7");
   if (!AcquireImageColormap(image,2))
-    ThrowBinaryException(ResourceLimitError,"MemoryAllocationFailed",
+    ThrowBinaryImageException(ResourceLimitError,"MemoryAllocationFailed",
       "UnableToThresholdImage");
   for (y=0; y < (ssize_t) image->rows; y++)
   {
@@ -7567,7 +7568,7 @@ MagickExport unsigned int ThresholdImageChannel(Image *image,
   if (!(flags & SigmaValue))
     {
       if (!AcquireImageColormap(image,2))
-        ThrowBinaryException(ResourceLimitError,"MemoryAllocationFailed",
+        ThrowBinaryImageException(ResourceLimitError,"MemoryAllocationFailed",
           "UnableToThresholdImage");
       if (pixel.red == 0)
         (void) GetImageDynamicThreshold(image,2.0,2.0,&pixel,&image->exception);

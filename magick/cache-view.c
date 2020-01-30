@@ -23,13 +23,13 @@
 %                               February 2000                                 %
 %                                                                             %
 %                                                                             %
-%  Copyright 1999-2018 ImageMagick Studio LLC, a non-profit organization      %
+%  Copyright 1999-2020 ImageMagick Studio LLC, a non-profit organization      %
 %  dedicated to making software imaging solutions freely available.           %
 %                                                                             %
 %  You may not use this file except in compliance with the License.  You may  %
 %  obtain a copy of the License at                                            %
 %                                                                             %
-%    https://www.imagemagick.org/script/license.php                           %
+%    https://imagemagick.org/script/license.php                               %
 %                                                                             %
 %  Unless required by applicable law or agreed to in writing, software        %
 %  distributed under the License is distributed on an "AS IS" BASIS,          %
@@ -156,7 +156,7 @@ MagickExport CacheView *AcquireVirtualCacheView(const Image *image,
   CacheView
     *magick_restrict cache_view;
 
-  magick_unreferenced(image);
+  magick_unreferenced(exception);
   assert(image != (Image *) NULL);
   assert(image->signature == MagickCoreSignature);
   if (image->debug != MagickFalse)
@@ -660,7 +660,7 @@ MagickExport const IndexPacket *GetCacheViewVirtualIndexQueue(
 %                                                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-%  GetCacheViewVirtualPixelQueue() returns the the pixels associated with
+%  GetCacheViewVirtualPixelQueue() returns the pixels associated with
 %  the last call to GetCacheViewVirtualPixels().  The pixels are virtual
 %  and therefore cannot be updated.
 %

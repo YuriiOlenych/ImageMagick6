@@ -6,11 +6,11 @@
 <html lang="en">
 <head>
   <meta charset="utf-8"  />
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"  />
-  <title>Command-line Options @ ImageMagick</title>
+  <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1,shrink-to-fit=no"  />
+  <title>ImageMagick - Command-line Options</title>
   <meta name="application-name" content="ImageMagick" />
-  <meta name="description" content="ImageMagick® is a software suite to create, edit, compose, or convert bitmap images. It can read and write images in a variety of formats (over 200) including PNG, JPEG, JPEG-2000, GIF, WebP, Postscript, PDF, and SVG. Use ImageMagick to resize, flip, mirror, rotate, distort, shear and transform images, adjust image colors, apply various special effects, or draw text, lines, polygons, ellipses and Bézier curves." />
-  <meta name="application-url" content="https://www.imagemagick.org" />
+  <meta name="description" content="Use ImageMagick® to create, edit, compose, and convert bitmap images. Resize an image, crop it, change its shades and colors, add captions, and more." />
+  <meta name="application-url" content="https://imagemagick.org" />
   <meta name="generator" content="PHP" />
   <meta name="keywords" content="command-line, options, ImageMagick, PerlMagick, image processing, image, photo, software, Magick++, OpenMP, convert" />
   <meta name="rating" content="GENERAL" />
@@ -19,24 +19,29 @@
   <meta name="author" content="ImageMagick Studio LLC" />
   <meta name="revisit-after" content="2 DAYS" />
   <meta name="resource-type" content="document" />
-  <meta name="copyright" content="Copyright (c) 1999-2017 ImageMagick Studio LLC" />
+  <meta name="copyright" content="Copyright (c) 1999-2019 ImageMagick Studio LLC" />
   <meta name="distribution" content="Global" />
   <meta name="magick-serial" content="P131-S030410-R485315270133-P82224-A6668-G1245-1" />
+  <meta property='og:url' content='https://imagemagick.org/' />
+  <meta property='og:title' content='ImageMagick' />
+  <meta property='og:image' content='https://imagemagick.org/images/logo.png' />
+  <meta property='og:type' content='website' />
+  <meta property='og:site_name' content='ImageMagick' />
+  <meta property='og:description' content="Convert, Edit, or Compose Bitmap Images" />
   <meta name="google-site-verification" content="_bMOCDpkx9ZAzBwb2kF3PRHbfUUdFj2uO8Jd1AXArz4" />
-  <link href="https://www.imagemagick.org/www/command-line-options.html" rel="canonical" />
+  <link href="https://imagemagick.org/www/command-line-options.html" rel="canonical" />
   <link href="../images/wand.png" rel="icon" />
   <link href="../images/wand.ico" rel="shortcut icon" />
-  <link href="assets/magick.css" rel="stylesheet" />
+  <link href="../assets/magick-css.html" rel="stylesheet" />
 </head>
 <body>
-  <header>
-  <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+  <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
     <a class="navbar-brand" href="../index.html"><img class="d-block" id="wand" alt="ImageMagick" width="32" height="32" src="../images/wand.ico"/></a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsMagick" aria-controls="navbarsMagick" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
 
-    <div class="navbar-collapse collapse" id="navbarsExampleDefault" style="">
+    <div class="navbar-collapse collapse" id="navbarsMagick" style="">
     <ul class="navbar-nav mr-auto">
       <li class="nav-item ">
         <a class="nav-link" href="../index.html">Home <span class="sr-only">(current)</span></a>
@@ -57,10 +62,10 @@
         <a class="nav-link" href="develop.html">Develop</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" target="_blank" href="https://www.imagemagick.org/discourse-server/">Community</a>
+        <a class="nav-link" target="_blank" href="https://imagemagick.org/discourse-server/">Community</a>
       </li>
     </ul>
-    <form class="form-inline my-2 my-lg-0" action="https://legacy.imagemagick.org/script/search.php">
+    <form class="form-inline my-2 my-lg-0" action="https://www.imagemagick.org/script/search.php">
       <input class="form-control mr-sm-2" type="text" name="q" placeholder="Search" aria-label="Search">
       <button class="btn btn-outline-success my-2 my-sm-0" type="submit" name="sa">Search</button>
     </form>
@@ -71,12 +76,13 @@
          style="display:block"
          data-ad-client="ca-pub-3129977114552745"
          data-ad-slot="6345125851"
-         data-ad-format="auto"></ins>
+         data-full-width-responsive="true"
+         data-ad-format="horizontal"></ins>
     <script>
       (adsbygoogle = window.adsbygoogle || []).push({});
     </script>
   </div>
-  </header>
+
   <main class="container">
     <div class="magick-template">
 <div class="magick-header">
@@ -564,7 +570,7 @@ negative results without clipping to the color value range
 <p>See the discussion on HDRI implementations of ImageMagick on the page <a
 href="high-dynamic-range.html" >High Dynamic-Range Images</a>. For more
 about HDRI go the ImageMagick <a
-href="https://www.imagemagick.org/Usage/basics/#hdri" >Usage</a> pages or this
+href="https://imagemagick.org/Usage/basics/#hdri" >Usage</a> pages or this
 <a
 href="http://en.wikipedia.org/wiki/High_dynamic_range_imaging">Wikipedia</a>
 entry.  </p>
@@ -936,7 +942,7 @@ include the following.
 </p>
 
 <p>Warning, some operators behave differently when the <a href="command-line-options.html#channel"
->+channel</a> default setting is in effect, verses ANY user defined <a
+>+channel</a> default setting is in effect, versus ANY user defined <a
 href="command-line-options.html#channel" >-channel</a> setting (including the equivalent of the
 default). These operators have yet to be made to understand the newer 'Sync'
 flag. </p>
@@ -955,7 +961,7 @@ resulting in 'halo' effects. The newer <a href="command-line-options.html#morpho
 convolution equivalents however does have a understanding of the 'Sync' flag
 and will thus handle transparency correctly by default. </p>
 
-<p>As a alpha channel is optional within images, some operators will read the
+<p>As an alpha channel is optional within images, some operators will read the
 color channels of an image as a greyscale alpha mask, when the image has no
 alpha channel present, and the <a href="command-line-options.html#channel" >-channel</a> setting tells
 the operator to apply the operation using alpha channels. The <a
@@ -1068,7 +1074,7 @@ spaces (e.g. <code>0,2,5</code>).  A value of '<code>0−−1</code> will
 effectively clone all the images. </p>
 
 <p>The <a href="command-line-options.html#clone">+clone</a> will simply make a copy of the last image
-in the image sequence, and is thus equivalent to using a argument of
+in the image sequence, and is thus equivalent to using an argument of
 '<code>−1</code>'. </p>
 
 <div style="margin: auto;">
@@ -1465,9 +1471,8 @@ href="command-line-options.html#set">-set</a> '<code>option:compose:args</code>'
 appropriately for the compose method. </p>
 
 <p>Some <a href="command-line-options.html#compose">-compose</a> methods can modify the 'destination'
-image outside the overlay area. You can disable this by setting the special <a
-href="command-line-options.html#set">-set</a> '<code>option:compose:outside-overlay</code>'
-to '<code>false</code>'.  </p>
+image outside the overlay area. You can disable this by setting this define:
+<a href="command-line-options.html#define">-define</a> '<code>compose:outside-overlay=false</code></p>
 
 <p>The SVG compositing specification requires that color and opacity values range between zero and QuantumRange inclusive.  You can permit values outside this range with this option: <a href="command-line-options.html#set">-set</a> '<code>option:compose:clamp=false</code></p>
 
@@ -1597,7 +1602,7 @@ negative results without clipping to the color value range (0..QuantumRange).
 See the discussion on HDRI implementations of ImageMagick on the page <a
 href="high-dynamic-range.html">High
 Dynamic-Range Images</a>. For more about HDRI go the ImageMagick <a
-href="https://www.imagemagick.org/Usage/basics/#hdri">Usage</a> pages or this
+href="https://imagemagick.org/Usage/basics/#hdri">Usage</a> pages or this
 <a href="http://en.wikipedia.org/wiki/High_dynamic_range_imaging">Wikipedia</a>
 entry.  </p>
 
@@ -1716,8 +1721,7 @@ option.</p>
 
 <p>Get the passphrase from the file specified by <var>filename</var>.</p>
 
-<p>For more information, see the webpage, <a
-href="https://www.imagemagick.org/www/cipher.html">ImageMagick: Encipher or
+<p>For more information, see the webpage, <a href="cipher.html">ImageMagick: Encipher or
 Decipher an Image</a>.</p>
 
 
@@ -1808,13 +1812,18 @@ available:</p>
   <tr>
     <td>compose:args=<var>arguments</var></td>
      <td>Sets certain compose argument values when using convert ... -compose ...
-    -composite. See <a href="https://www.imagemagick.org/www/compose.html"
+    -composite. See <a href="https://imagemagick.org/www/compose.html"
     >Image Composition</a></td>
   </tr>
 
   <tr>
     <td>compose:clamp=<var>on|off</var></td>
     <td>set each pixel whose value is below zero to zero and any the pixel whose value is above the quantum range to the quantum range (e.g. 65535) otherwise the pixel value remains unchanged.  Define supported in ImageMagick 6.9.1-3 and above.</td>
+  </tr>
+
+  <tr>
+    <td>compose:outside-overlay=<var>true|false</var></td>
+    <td>Some <a href="command-line-options.html#compose" >-compose</a> methods can modify the 'destination' image outside the overlay area.  It is disabled by default.</td>
   </tr>
 
   <tr>
@@ -1910,6 +1919,11 @@ available:</p>
     <td>Sets the viewport for use with <a href="command-line-options.html#distort">-distort</a></td>
   </tr>
 
+  <tr>
+    <td>dither:diffusion-amount=<var>X%</var></td>
+    <td>Sets the amount of diffusion to use with Floyd-Steinberg diffusion</td>
+  </tr>
+  
   <tr>
     <td>dot:layout-engine=<var>value</var></td>
      <td>Specifies the layout engine for the DOT image format (e.g.
@@ -2854,7 +2868,16 @@ and meaning of the floating point values depends on the distortion <var>method</
        'Perspective' distortion, or by calculating them yourself.
        If the last two perspective scaling coefficients are zero, the
        remaining 6 represents a transposed 'Affine Matrix'. </td>
+  </tr>
 
+  <tr>
+    <td>Polynomial</td>
+    <td>
+       Do an Nth order 2D 'Polynomial' distortion using a set of corresponding 
+       control points. The order of the polynomial dictates the minimum number of 
+       control points needed. Order 1 is the same as -distort Affine. Order 1.5 is the 
+       same as -distort BilinearReverse. Typical use is for a 2nd order distortion. 
+       There is no +distort polynomial.</td>
   </tr>
 
   <tr>
@@ -3112,7 +3135,7 @@ lookup value. This is typically only used for debugging EWA resampling. </p>
 
 <p class="magick-description">Apply a Riemersma or Floyd-Steinberg error diffusion dither to
 images when general color reduction is applied via an option, or automagically
-when saving to specific formats. This enabled by default.</p>
+when saving to specific formats. This is enabled by default.</p>
 
 <p>Dithering places two or more colors in neighboring pixels so that to the
 eye a closer approximation of the images original color is reproduced. This
@@ -3371,6 +3394,7 @@ than 1.png).</p>
 
 <p>Drawing primitives conform to the <a href="magick-vector-graphics.html" >Magick
 Vector Graphics</a> format.</p>
+<p>Note, drawing requires an alpha channel.  If none is available, an all opaque alpha channel is implicitedly created.</p>
 
 
 <div style="margin: auto;">
@@ -3406,8 +3430,7 @@ image sequence.</p>
 
 <p>Get the passphrase from the file specified by <var>filename</var>.</p>
 
-<p>For more information, see the webpage, <a
-href="https://www.imagemagick.org/www/cipher.html">ImageMagick: Encipher or
+<p>For more information, see the webpage, <<a href="cipher.html">ImageMagick: Encipher or
 Decipher an Image</a>.</p>
 
 
@@ -3457,12 +3480,12 @@ image into some other color space, such as HSL, OHTA, YIQ or YUV, then
 equalize the appropriate intensity-like channel, then convert back to RGB.</p>
 
 <p>For example using HSL, we have: ... <code>-colorspace HSL -channel lightness
--equalize -colorspace RGB</code> ...</p>
+-equalize -colorspace sRGB</code> ...</p>
 
 <p>For YIQ, YUV and OHTA use the red channel. For example, OHTA is a principal
 components transformation that puts most of the information in the first
 channel. Here we have ... <code>-colorspace OHTA -channel red -equalize
--colorspace RGB</code> ...</p>
+-colorspace sRGB</code> ...</p>
 
 <div style="margin: auto;">
   <h3><a class="anchor" id="evaluate"></a>-evaluate <var>operator value</var></h3>
@@ -3636,7 +3659,7 @@ image is centered on an 800x600 black canvas: </p>
   -gravity center -extent 800x600 -quality 92 output.jpg
 </code></pre>
 
-<p>See <a href="command-line-processing.html#geometry">Image Geometry</a> for complete details about the <em class="arg">geometry</em> argument.</p>
+<p>Extent supports geometry offsets as well as aspect ratio control. See <a href="command-line-processing.html#geometry">Image Geometry</a> for complete details about the <em class="arg">geometry</em> argument.</p>
 
 <div style="margin: auto;">
   <h3><a class="anchor" id="extract"></a>-extract <var>geometry</var></h3>
@@ -3785,7 +3808,7 @@ this requires that IM be configured with HDRI enabled. In this case, you must
 use either MIFF, TIF, PFM or MPC formats for the real and imaginary component
 results, since they are formats that preserve both negative and fractional
 values without clipping them or truncating the fractional part. With either
-MIFF or TIF, one should add <code>-define quantum:format=32<.code>, to allow those image
+MIFF or TIFF, one should add <code>-define quantum:format=32</code>, to allow those image
 types to work properly in HDRI mode without clipping.</p>
 
 <p>The real and imaginary component images resulting from <a
@@ -3796,7 +3819,7 @@ images.</p>
 <p>See the discussion on HDRI implementations of ImageMagick on the page <a
 href="high-dynamic-range.html" >High Dynamic-Range Images</a>. For more
 about HDRI go the ImageMagick <a
-href="https://www.imagemagick.org/Usage/basics/#hdri" >Usage</a> pages, <a
+href="https://imagemagick.org/Usage/basics/#hdri" >Usage</a> pages, <a
 href="http://www.fmwconcepts.com/imagemagick/fourier_transforms/fourier.html"
 >Fred's Fourier Processing With ImageMagick page</a> or this <a
  href="http://en.wikipedia.org/wiki/High_dynamic_range_imaging" >Wikipedia</a>
@@ -5852,7 +5875,7 @@ argument determine how many images to interpolate between each image. </p>
 <p class="magick-description">apply a morphology method to the image.</p>
 
 <p>Until I get around to writing an option summary for this, see <a
-href="https://www.imagemagick.org/Usage/morphology/" >IM Usage Examples,
+href="https://imagemagick.org/Usage/morphology/" >IM Usage Examples,
 Morphology</a>. </p>
 
 
@@ -6634,6 +6657,8 @@ correction, apply the transform, then restore it like this:</p>
   -quality 92 passport.jpg
 </code></pre>
 
+<p>Note, some resampling functions are damped oscillations in approximation of a Sinc function.  As such, you may get negative lobes if your release of ImageMagick is HDRI-enabled.  To eliminate them, add <a href="command-line-options.html#clamp">-clamp</a> to your command-line.</p>
+
 <div style="margin: auto;">
   <h3><a class="anchor" id="respect-parentheses"></a>-respect-parentheses</h3>
 </div>
@@ -6847,7 +6872,7 @@ assigned before the image is read in, by using a <var>key</var> of
 the same name. </p>
 
 <p>If the given <var>key</var> does not match a specific known
-'attribute ', such as shown above, the setting is stored as a a free form
+'attribute ', such as shown above, the setting is stored as a free form
 'property' string.  Such settings are listed in <a href="command-line-options.html#verbose"
 >-verbose</a> information ("<code>info:</code>" output format) as "Properties".
 </p>
@@ -6992,7 +7017,7 @@ Offsets are ignored.</p>
 
 <p class="magick-description">Shear the image along the x-axis and/or y-axis.</p>
 
-<p>The shear angles may be positive, negative, or zero. When <var>Ydegrees</var> is omitted it defaults to 0. When both angles are
+<p>The shear angles may be positive, negative, or zero. When <var>Ydegrees</var> is omitted it defaults to <var>Xdegrees</var>. When both angles are
 given, the horizontal component of the shear is performed before the vertical
 component.</p>
 
@@ -7675,6 +7700,10 @@ information if it is unwanted.</p>
 single pixel transparent 'missed' image is returned, in the same way as when a
 <a href="command-line-options.html#crop">-crop</a> operation 'misses' the image proper. </p>
 
+<p>Use <code><a href="command-line-options.html#define">-define</a> trim:percent-background=0%</code> to remove all the background from the image.  The amount of background that is tolerated in an edge specified as a percent.  0% means no background is tolerated.  50% means an edge can contain up to 50% pixels that are background per the fuzz-factor.</p>
+
+<p>Use <code><a href="command-line-options.html#define">-define</a> trim:background-color=<em>color</em></code> to identify background color surrounding the region of interest.</p>
+
 
 <div style="margin: auto;">
   <h3><a class="anchor" id="type"></a>-type <var>type</var></h3>
@@ -7974,21 +8003,23 @@ href="command-line-options.html#colors">-colors</a> to reduce the number of colo
   </main><!-- /.container -->
   <footer class="magick-footer">
     <p><a href="security-policy.html">Security</a> •
-    <a href="architecture.html">Architecture</a> •
+    <a href="architecture.html">Architecture</a>
+     
+    <a href="command-line-options.html#"><img class="d-inline" id="wand" alt="And Now a Touch of Magick" width="16" height="16" src="../images/wand.ico"/></a>
+     
     <a href="links.html">Related</a> •
      <a href="sitemap.html">Sitemap</a>
-       
-    <a href="command-line-options.html#"><img class="d-inline" id="wand" alt="And Now a Touch of Magick" width="16" height="16" src="../images/wand.ico"/></a>
-       
-    <a href="http://pgp.mit.edu/pks/lookup?op=get&amp;search=0x89AB63D48277377A">Public Key</a> •
-    <a href="support.html">Donate</a> •
-    <a href="https://legacy.imagemagick.org/script/contact.php">Contact Us</a>
     <br/>
-        <small>© 1999-2018 ImageMagick Studio LLC</small></p>
+       
+    <a href="support.html">Donate</a> •
+    <a href="http://pgp.mit.edu/pks/lookup?op=get&amp;search=0x89AB63D48277377A">Public Key</a> •
+    <a href="https://www.imagemagick.org/script/contact.php">Contact Us</a> 
+    <br/>
+    <small>© 1999-2020 ImageMagick Studio LLC</small></p>
   </footer>
 
   <!-- Javascript assets -->
-  <script src="assets/magick.js" crossorigin="anonymous"></script>
-  <script>window.jQuery || document.write('<script src="assets/jquery.min.js"><\/script>')</script>
+  <script src="../assets/magick-js.html" crossorigin="anonymous"></script>
+  <script>window.jQuery || document.write('<script src="https://localhost/ajax/libs/jquery/3.4.1/jquery.min.js"><\/script>')</script>
 </body>
 </html>

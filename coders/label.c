@@ -17,13 +17,13 @@
 %                                 July 1992                                   %
 %                                                                             %
 %                                                                             %
-%  Copyright 1999-2018 ImageMagick Studio LLC, a non-profit organization      %
+%  Copyright 1999-2020 ImageMagick Studio LLC, a non-profit organization      %
 %  dedicated to making software imaging solutions freely available.           %
 %                                                                             %
 %  You may not use this file except in compliance with the License.  You may  %
 %  obtain a copy of the License at                                            %
 %                                                                             %
-%    https://www.imagemagick.org/script/license.php                           %
+%    https://imagemagick.org/script/license.php                               %
 %                                                                             %
 %  Unless required by applicable law or agreed to in writing, software        %
 %  distributed under the License is distributed on an "AS IS" BASIS,          %
@@ -138,9 +138,7 @@ static Image *ReadLABELImage(const ImageInfo *image_info,
       ThrowReaderException(ImageError,"WidthOrHeightExceedsLimit");
     }
   draw_info->text=ConstantString(label);
-  metrics.width=0.0;
-  metrics.height=0.0;
-  metrics.ascent=0.0;
+  (void) memset(&metrics,0,sizeof(metrics));
   status=GetMultilineTypeMetrics(image,draw_info,&metrics);
   if ((image->columns == 0) && (image->rows == 0))
     {
@@ -259,10 +257,10 @@ static Image *ReadLABELImage(const ImageInfo *image_info,
   /*
     Draw label.
   */
-  (void) FormatLocaleString(geometry,MaxTextExtent,"%+g%+g",
-    draw_info->direction == RightToLeftDirection ? (double) image->columns-
-    metrics.bounds.x2 : 0.0,draw_info->gravity == UndefinedGravity ?
-    metrics.ascent : 0.0);
+  (void) FormatLocaleString(geometry,MagickPathExtent,"%+g%+g",
+    (draw_info->direction == RightToLeftDirection ? (double) image->columns-
+    metrics.bounds.x2 : 0.0),(draw_info->gravity == UndefinedGravity ?
+    MagickMax(metrics.ascent,metrics.bounds.y2) : 0.0));
   (void) CloneString(&draw_info->geometry,geometry);
   status=AnnotateImage(image,draw_info);
   if (image_info->pointsize == 0.0)
@@ -316,7 +314,7 @@ ModuleExport size_t RegisterLABELImage(void)
   entry->adjoin=MagickFalse;
   entry->format_type=ImplicitFormatType;
   entry->description=ConstantString("Image label");
-  entry->module=ConstantString("LABEL");
+  entry->magick_module=ConstantString("LABEL");
   (void) RegisterMagickInfo(entry);
   return(MagickImageCoderSignature);
 }

@@ -17,13 +17,13 @@
 %                                 July 1992                                   %
 %                                                                             %
 %                                                                             %
-%  Copyright 1999-2018 ImageMagick Studio LLC, a non-profit organization      %
+%  Copyright 1999-2020 ImageMagick Studio LLC, a non-profit organization      %
 %  dedicated to making software imaging solutions freely available.           %
 %                                                                             %
 %  You may not use this file except in compliance with the License.  You may  %
 %  obtain a copy of the License at                                            %
 %                                                                             %
-%    https://www.imagemagick.org/script/license.php                           %
+%    https://imagemagick.org/script/license.php                               %
 %                                                                             %
 %  Unless required by applicable law or agreed to in writing, software        %
 %  distributed under the License is distributed on an "AS IS" BASIS,          %
@@ -375,6 +375,8 @@ static Image *ReadSGIImage(const ImageInfo *image_info,ExceptionInfo *exception)
     if ((image_info->ping != MagickFalse) && (image_info->number_scenes != 0))
       if (image->scene >= (image_info->scene+image_info->number_scenes-1))
         break;
+    if ((MagickSizeType) (image->columns*image->rows/255) > GetBlobSize(image))
+      ThrowReaderException(CorruptImageError,"InsufficientImageDataInFile");
     status=SetImageExtent(image,image->columns,image->rows);
     if (status != MagickFalse)
       status=ResetImagePixels(image,&image->exception);
@@ -419,7 +421,7 @@ static Image *ReadSGIImage(const ImageInfo *image_info,ExceptionInfo *exception)
           for (y=0; y < (ssize_t) iris_info.rows; y++)
           {
             count=ReadBlob(image,bytes_per_pixel*iris_info.columns,scanline);
-            if (count != (bytes_per_pixel*iris_info.columns))
+            if (count != (ssize_t) (bytes_per_pixel*iris_info.columns))
               break;
             if (bytes_per_pixel == 2)
               for (x=0; x < (ssize_t) iris_info.columns; x++)
@@ -521,7 +523,7 @@ static Image *ReadSGIImage(const ImageInfo *image_info,ExceptionInfo *exception)
                   }
                 (void) ReadBlob(image,(size_t) runlength[y+z*iris_info.rows],
                   packets);
-                if (count != runlength[y+z*iris_info.rows])
+                if (count != (ssize_t) runlength[y+z*iris_info.rows])
                   break;
                 offset+=(ssize_t) runlength[y+z*iris_info.rows];
                 status=SGIDecode(bytes_per_pixel,(ssize_t)
@@ -561,7 +563,7 @@ static Image *ReadSGIImage(const ImageInfo *image_info,ExceptionInfo *exception)
                   }
                 count=ReadBlob(image,(size_t) runlength[y+z*iris_info.rows],
                   packets);
-                if (count != runlength[y+z*iris_info.rows])
+                if (count != (ssize_t) runlength[y+z*iris_info.rows])
                   break;
                 offset+=(ssize_t) runlength[y+z*iris_info.rows];
                 status=SGIDecode(bytes_per_pixel,(ssize_t)
@@ -796,7 +798,7 @@ ModuleExport size_t RegisterSGIImage(void)
   entry->encoder=(EncodeImageHandler *) WriteSGIImage;
   entry->magick=(IsImageFormatHandler *) IsSGI;
   entry->description=ConstantString("Irix RGB image");
-  entry->module=ConstantString("SGI");
+  entry->magick_module=ConstantString("SGI");
   entry->seekable_stream=MagickTrue;
   (void) RegisterMagickInfo(entry);
   return(MagickImageCoderSignature);
@@ -957,8 +959,6 @@ static MagickBooleanType WriteSGIImage(const ImageInfo *image_info,Image *image)
   assert(image->signature == MagickCoreSignature);
   if (image->debug != MagickFalse)
     (void) LogMagickEvent(TraceEvent,GetMagickModule(),"%s",image->filename);
-  if ((image->columns > 65535UL) || (image->rows > 65535UL))
-    ThrowWriterException(ImageError,"WidthOrHeightExceedsLimit");
   status=OpenBlob(image_info,image,WriteBinaryBlobMode,&image->exception);
   if (status == MagickFalse)
     return(status);
@@ -969,6 +969,8 @@ static MagickBooleanType WriteSGIImage(const ImageInfo *image_info,Image *image)
     /*
       Initialize SGI raster file header.
     */
+    if ((image->columns > 65535UL) || (image->rows > 65535UL))
+      ThrowWriterException(ImageError,"WidthOrHeightExceedsLimit");
     (void) TransformImageColorspace(image,sRGBColorspace);
     (void) memset(&iris_info,0,sizeof(iris_info));
     iris_info.magic=0x01DA;

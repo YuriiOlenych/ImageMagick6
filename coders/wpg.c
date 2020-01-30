@@ -16,13 +16,13 @@
 %                                 June 2000                                   %
 %                                                                             %
 %                                                                             %
-%  Copyright 1999-2018 ImageMagick Studio LLC, a non-profit organization      %
+%  Copyright 1999-2020 ImageMagick Studio LLC, a non-profit organization      %
 %  dedicated to making software imaging solutions freely available.           %
 %                                                                             %
 %  You may not use this file except in compliance with the License.  You may  %
 %  obtain a copy of the License at                                            %
 %                                                                             %
-%    https://www.imagemagick.org/script/license.php                           %
+%    https://imagemagick.org/script/license.php                               %
 %                                                                             %
 %  Unless required by applicable law or agreed to in writing, software        %
 %  distributed under the License is distributed on an "AS IS" BASIS,          %
@@ -899,7 +899,7 @@ static Image *ExtractPostscript(Image *image,const ImageInfo *image_info,
     } while (p != (Image *) NULL);
   }
 
-  if ((image->rows == 0 || image->columns == 0) && 
+  if ((image->rows == 0 || image->columns == 0) &&
       (image->previous != NULL || image->next != NULL))
   {
     DeleteImageFromList(&image);
@@ -1111,6 +1111,7 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
   image->columns = 1;
   image->rows = 1;
   image->colors = 0;
+  image->storage_class=DirectClass;
   (void) ResetImagePixels(image,exception);
   bpp=0;
   BitmapHeader2.RotAngle=0;
@@ -1169,7 +1170,7 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
               if (WPG_Palette.StartIndex > WPG_Palette.NumOfEntries)
                 ThrowReaderException(CorruptImageError,"InvalidColormapIndex");
               image->colors=WPG_Palette.NumOfEntries;
-              if (!AcquireImageColormap(image,image->colors))
+              if (AcquireImageColormap(image,image->colors) == MagickFalse)
                 goto NoMemory;
               for (i=WPG_Palette.StartIndex;
                    i < (int)WPG_Palette.NumOfEntries; i++)
@@ -1255,10 +1256,28 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
               else
                 {
                   if (bpp < 24)
-                    if ( (image->colors < (one << bpp)) && (bpp != 24) )
-                      image->colormap=(PixelPacket *) ResizeQuantumMemory(
-                        image->colormap,(size_t) (one << bpp),
-                        sizeof(*image->colormap));
+                  if ( (image->colors < (one << bpp)) && (bpp != 24) )
+                    {
+                      PixelPacket
+                        *colormap;
+
+                      size_t
+                        colors;
+
+                      colormap=image->colormap;
+                      colors=image->colors;
+                      image->colormap=(PixelPacket *) NULL;
+                      if (AcquireImageColormap(image,one << bpp) == MagickFalse)
+                        {
+                          colormap=(PixelPacket *)
+                            RelinquishMagickMemory(colormap);
+                          goto NoMemory;
+                        }
+                      (void) memcpy(image->colormap,colormap,MagickMin(
+                        image->colors,colors)*sizeof(*image->colormap));
+                      colormap=(PixelPacket *)
+                        RelinquishMagickMemory(colormap);
+                    }
                 }
 
               if ((bpp == 1) && (image->colors > 1))
@@ -1327,6 +1346,10 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
                 }
 
               /* Allocate next image structure. */
+              if ((image_info->ping != MagickFalse) &&
+                  (image_info->number_scenes != 0))
+                if (image->scene >= (image_info->scene+image_info->number_scenes-1))
+                  goto Finish;
               AcquireNextImage(image_info,image);
               image->depth=8;
               if (image->next == (Image *) NULL)
@@ -1534,6 +1557,10 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
 
 
               /* Allocate next image structure. */
+              if ((image_info->ping != MagickFalse) &&
+                  (image_info->number_scenes != 0))
+                if (image->scene >= (image_info->scene+image_info->number_scenes-1))
+                  goto Finish;
               AcquireNextImage(image_info,image);
               image->depth=8;
               if (image->next == (Image *) NULL)
@@ -1641,7 +1668,7 @@ ModuleExport size_t RegisterWPGImage(void)
   entry->decoder=(DecodeImageHandler *) ReadWPGImage;
   entry->magick=(IsImageFormatHandler *) IsWPG;
   entry->description=AcquireString("Word Perfect Graphics");
-  entry->module=ConstantString("WPG");
+  entry->magick_module=ConstantString("WPG");
   entry->seekable_stream=MagickTrue;
   (void) RegisterMagickInfo(entry);
   return(MagickImageCoderSignature);
